@@ -46,6 +46,11 @@ quote-style = 'single'
 pythonpath = '.'
 addopts = '-p no:warnings'
 
+[tool.coverage.run]
+omit = [
+    "fast_zero_async/database.py",
+]
+
 [tool.taskipy.tasks]
 lint = 'ruff check'
 pre_format = 'ruff check --fix'
