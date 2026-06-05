@@ -3,15 +3,14 @@ from http import HTTPStatus
 import jwt
 
 from fast_zero_async.security import create_access_token
-from fast_zero_async.settings import Settings
 
 
-def test_jwt():
+def test_jwt(settings):
     data = {'test': 'test'}
 
     token = create_access_token(data)
 
-    decoded = jwt.decode(token, Settings().SECRET_KEY, Settings().ALGORITHM)
+    decoded = jwt.decode(token, settings.SECRET_KEY, settings.ALGORITHM)
 
     assert decoded['test'] == data['test']
     assert 'exp' in decoded

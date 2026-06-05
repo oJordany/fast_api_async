@@ -10,6 +10,7 @@ from fast_zero_async.app import app
 from fast_zero_async.database import get_session
 from fast_zero_async.models import User, table_registry
 from fast_zero_async.security import get_password_hash
+from fast_zero_async.settings import Settings
 
 
 @pytest.fixture
@@ -90,7 +91,7 @@ def user(session: Session):
 @pytest.fixture
 def token(client, user):
     response = client.post(
-        '/token',
+        '/auth/token',
         data={
             'username': user.email,
             'password': user.clean_password,
@@ -98,3 +99,9 @@ def token(client, user):
     )
 
     return response.json()['access_token']
+
+
+@pytest.fixture
+def settings():
+    settings = Settings()
+    return settings
