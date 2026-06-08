@@ -1,11 +1,14 @@
 from dataclasses import asdict
 
+import pytest
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from fast_zero_async.models import User
 
 
-def test_create_user(session, mock_db_time):
+@pytest.mark.asyncio
+async def test_create_user(session: AsyncSession, mock_db_time):
     with mock_db_time(model=User) as times:
         new_user = User(
             username='test',
@@ -14,9 +17,11 @@ def test_create_user(session, mock_db_time):
         )
 
         session.add(new_user)
-        session.commit()
+        await session.commit()
 
-        user = session.scalar(select(User).where(User.username == 'test'))
+        user = await session.scalar(
+            select(User).where(User.username == 'test')
+        )
 
         assert asdict(user) == {
             'id': 1,
@@ -28,7 +33,8 @@ def test_create_user(session, mock_db_time):
         }
 
 
-def test_update_user(session, mock_db_time):
+@pytest.mark.asyncio
+async def test_update_user(session: AsyncSession, mock_db_time):
     with mock_db_time(model=User) as times:
         new_user = User(
             username='test',
@@ -37,9 +43,9 @@ def test_update_user(session, mock_db_time):
         )
 
         session.add(new_user)
-        session.commit()
+        await session.commit()
 
-        user_created = session.scalar(
+        user_created = await session.scalar(
             select(User).where(User.username == 'test')
         )
 
@@ -53,9 +59,9 @@ def test_update_user(session, mock_db_time):
         }
 
         user_created.username = 'jordany'
-        session.commit()
+        await session.commit()
 
-        user_updated = session.scalar(
+        user_updated = await session.scalar(
             select(User).where(User.username == 'jordany')
         )
 

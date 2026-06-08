@@ -121,7 +121,6 @@ def test_update_integrity_error(client, user, token):
             'password': 'secret',
         },
     )
-
     response = client.put(
         f'/users/{user.id}',
         json={
