@@ -6,6 +6,6 @@ engine = create_async_engine(Settings().DATABASE_URL)
 session = AsyncSession(engine)
 
 
-async def get_session() -> AsyncSession:
+async def get_session() -> AsyncSession:  # pragma: no cover
     async with AsyncSession(engine, expire_on_commit=False) as session:
         yield session

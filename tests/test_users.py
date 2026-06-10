@@ -75,7 +75,7 @@ def test_read_user_not_found(client):
     assert response.json().get('detail') == 'User not found'
 
 
-def test_update_user(client, user, token):
+def test_update_user(client, user, other_user, token):
     response = client.put(
         f'/users/{user.id}',
         json={
@@ -96,9 +96,9 @@ def test_update_user(client, user, token):
     }
 
 
-def test_update_not_enough_permissions(client, user, token):
+def test_update_not_enough_permissions(client, other_user, token):
     response = client.put(
-        '/users/2',
+        f'/users/{other_user.id}',
         json={
             'username': 'alice',
             'email': 'ali@example.com.br',
@@ -112,21 +112,13 @@ def test_update_not_enough_permissions(client, user, token):
     assert response.json().get('detail') == 'Not enough permissions'
 
 
-def test_update_integrity_error(client, user, token):
-    client.post(
-        '/users',
-        json={
-            'username': 'alice',
-            'email': 'alice@example.com.br',
-            'password': 'secret',
-        },
-    )
+def test_update_integrity_error(client, user, other_user, token):
     response = client.put(
         f'/users/{user.id}',
         json={
             'username': 'alice',
-            'email': user.email,
-            'password': user.password,
+            'email': other_user.email,
+            'password': other_user.password,
         },
         headers={
             'Authorization': f'Bearer {token}',
@@ -150,9 +142,9 @@ def test_delete_user(client, user, token):
     assert response.json() == {'message': 'User deleted'}
 
 
-def test_delete_user_not_enough_permissions(client, user, token):
+def test_delete_user_not_enough_permissions(client, other_user, token):
     response = client.delete(
-        '/users/2',
+        f'/users/{other_user.id}',
         headers={
             'Authorization': f'Bearer {token}',
         },
