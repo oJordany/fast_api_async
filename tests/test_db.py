@@ -2,9 +2,11 @@ from dataclasses import asdict
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.exc import DataError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from fast_zero_async.models import User
+from tests.test_todos import TodoFactory
 
 
 @pytest.mark.asyncio
@@ -28,6 +30,7 @@ async def test_create_user(session: AsyncSession, mock_db_time):
             'username': 'test',
             'email': 'test@test',
             'password': 'teste',
+            'todos': [],
             'created_at': times[0],
             'updated_at': times[0],
         }
@@ -54,6 +57,7 @@ async def test_update_user(session: AsyncSession, mock_db_time):
             'username': 'test',
             'email': 'test@test',
             'password': 'teste',
+            'todos': [],
             'created_at': times[0],
             'updated_at': times[0],
         }
@@ -70,6 +74,17 @@ async def test_update_user(session: AsyncSession, mock_db_time):
             'username': 'jordany',
             'email': 'test@test',
             'password': 'teste',
+            'todos': [],
             'created_at': times[0],
             'updated_at': times[1],
         }
+
+
+@pytest.mark.asyncio
+async def test_create_todo_invalid_state(session: AsyncSession, mock_db_time):
+    todo = TodoFactory(state='invalid')
+    session.add(todo)
+    with pytest.raises(DataError) as exc_info:
+        await session.commit()
+
+    assert 'invalid' in str(exc_info.value)
